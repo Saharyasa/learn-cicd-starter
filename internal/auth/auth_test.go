@@ -46,3 +46,6 @@ func TestGetAPIKey(t *testing.T) {
 		})
 	}
 }
+
+// TEMP: make CI fail on purpose
+func Test_IntentionalFail(t *testing.T) { t.Fatal("intentional fail") }
