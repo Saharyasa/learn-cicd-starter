@@ -15,7 +15,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.25.1"
+          go-version: "1.22.x"   # if 1.25.1 fails, use a stable line like 1.22.x
 
-      - name: Force Failure
-        run: exit 1
+      - name: Print Go version
+        run: go version
