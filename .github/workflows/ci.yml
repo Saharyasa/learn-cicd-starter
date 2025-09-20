@@ -4,6 +4,13 @@ on: [push, pull_request]
 
 jobs:
   tests:
+    name: CI
+
+on:
+  pull_request:
+
+jobs:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -24,3 +31,4 @@ jobs:
           go-version: '1.21'
       - name: Check formatting
         run: test -z $(go fmt ./...)
+
