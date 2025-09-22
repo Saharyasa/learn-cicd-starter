@@ -1,29 +1,27 @@
 package main
 
-// This file references otherwise-unused symbols so staticcheck (U1000) doesn't fail in the tutorial repo.
-// It has no runtime effect.
+// References otherwise-unused symbols so staticcheck (U1000) doesn't fail in the tutorial repo.
+// No runtime effect.
 
 var (
-	_ = apiConfig{}
+	// Methods on *apiConfig — use method expressions
+	_ = (*apiConfig).handlerNotesGet
+	_ = (*apiConfig).handlerNotesCreate
+	_ = (*apiConfig).handlerUsersCreate
+	_ = (*apiConfig).handlerUsersGet
+	_ = (*apiConfig).middlewareAuth
 
-	// handlers
-	_ = handlerNotesGet
-	_ = handlerNotesCreate
-	_ = handlerReadiness
-	_ = handlerUsersCreate
-	_ = handlerUsersGet
-
-	// helpers
+	// Plain functions
+	_ = handleReadiness
 	_ = generateRandomSHA256Hash
 	_ = respondWithError
 	_ = respondWithJSON
 	_ = writeJSON
 
-	// middleware
+	// Types / zero values
 	_ = authMiddleware{}
-	_ = middlewareAuth
 
-	// model mappers
+	// Model mapping helpers
 	_ = databaseUserToUser
 	_ = databaseNoteToNote
 	_ = databasePostsToPosts
