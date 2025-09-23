@@ -11,8 +11,12 @@ var (
     _ = (*apiConfig).handlerUserGet
     _ = (*apiConfig).middlewareAuth
     
-    // Plain functions
-    _ = handlerReadiness  // Make sure this matches your actual function name
-    _ = handlerErr        // Common error handler
-    _ = handlerRoot       // Common root handler
+    // handlers
+    _ = handlerNotesGet
+    _ = handlerNotesCreate
+    _ = handlerHeadLoss
+    _ = handlerUserSelect
+    
+    // helpers
+    _ = handlerReadiness
 )
