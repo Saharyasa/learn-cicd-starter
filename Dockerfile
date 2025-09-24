@@ -1,24 +1,29 @@
-# Build stage
-FROM golang:1.20 AS builder
+# syntax=docker/dockerfile:1
+
+########################
+# 1) Build the binary
+########################
+FROM golang:1.22 AS builder
 
 WORKDIR /app
 
-# Copy go.mod and go.sum first for dependency caching
+# Cache deps first
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the rest of the code
+# Copy the rest and build
 COPY . .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o notely .
 
-# Build the Go binary
-RUN go build -o notely .
+########################
+# 2) Minimal runtime image
+########################
+FROM gcr.io/distroless/static-debian12 AS runner
 
-# Final stage
-FROM debian:stable-slim
-
-RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
-
-# Copy the binary from the builder
+# Copy the compiled binary
 COPY --from=builder /app/notely /usr/bin/notely
 
-CMD ["notely"]
+# Cloud Run listens on 8080 by default
+EXPOSE 8080
+USER nonroot:nonroot
+ENTRYPOINT ["/usr/bin/notely"]
