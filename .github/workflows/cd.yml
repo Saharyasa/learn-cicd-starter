@@ -3,7 +3,7 @@ name: cd
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:   # 👈 this adds the "Run workflow" button
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -12,12 +12,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: notely-473021
-          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
-          export_default_credentials: true
 
       - name: Build and push Docker image
         run: |
