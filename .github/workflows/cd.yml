@@ -5,21 +5,11 @@ on:
     branches: [ main ]
 
 jobs:
-  Deploy:
-    runs-on: ubuntu-latest
-    name: CD
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v2
@@ -29,14 +19,13 @@ jobs:
           export_default_credentials: true
 
       - name: Build and push Docker image
-      - name: Deploy to Cloud Run
-  run: |
-    gcloud run deploy notely \
-      --image us-central1-docker.pkg.dev/notely-473021/notely-ar-repo/notely:latest \
-      --region us-central1 \
-      --allow-unauthenticated
-
         run: |
           gcloud builds submit \
-            --tag us-central1-docker.pkg.dev/notely-473021/notely-ar-repo/notely:latest
+            --tag us-central1-docker.pkg.dev/notely-473021/notely-ar-repo/notely:latest .
 
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy notely \
+            --image us-central1-docker.pkg.dev/notely-473021/notely-ar-repo/notely:latest \
+            --region us-central1 \
+            --allow-unauthenticated
