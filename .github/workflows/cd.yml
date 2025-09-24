@@ -1,32 +1,43 @@
 name: cd
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
-  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      # 1) Check out your repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
+      # 2) Authenticate to GCP (uses the JSON you saved in the GCP_CREDENTIALS secret)
+      - name: Auth to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          project_id: notely-473021
 
+      # 3) Install gcloud
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: notely-473021
+          version: ">= 477.0.0"
 
+      # 4) (Optional but nice) allow Docker/gcloud to push to Artifact Registry hosts
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev -q
+
+      # 5) Build & push image to Artifact Registry
       - name: Build and push Docker image
         run: |
           gcloud builds submit . \
             --tag us-central1-docker.pkg.dev/notely-473021/notely-ar-repo/notely:latest
 
+      # 6) Deploy the image to Cloud Run
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy notely \
