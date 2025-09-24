@@ -3,12 +3,13 @@ name: cd
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:   # 👈 this adds the "Run workflow" button
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up gcloud
@@ -18,17 +19,14 @@ jobs:
           service_account_key: ${{ secrets.GCP_CREDENTIALS }}
           export_default_credentials: true
 
-      # Build & push a NEW image for every commit, tagged with the SHA
-      - name: Build and push image
+      - name: Build and push Docker image
         run: |
-          IMAGE="us-central1-docker.pkg.dev/notely-473021/notely-ar-repo/notely:${{ github.sha }}"
-          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
-          gcloud builds submit . --tag "$IMAGE"
+          gcloud builds submit . \
+            --tag us-central1-docker.pkg.dev/notely-473021/notely-ar-repo/notely:latest
 
-      # Deploy that exact image
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy notely \
-            --image "$IMAGE" \
+            --image us-central1-docker.pkg.dev/notely-473021/notely-ar-repo/notely:latest \
             --region us-central1 \
             --allow-unauthenticated
